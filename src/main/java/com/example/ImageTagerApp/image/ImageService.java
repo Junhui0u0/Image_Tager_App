@@ -31,6 +31,12 @@ public class ImageService {
     //갤러리에 있는 캡쳐사진 저장
     @Transactional
     public void registerImages(final List<MultipartFile> images, final String userDeviceToken){
+        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
+        List<Image> imageList= imageRepository.findAllByUserDeviceToken(userDeviceToken);
+        for(Image deleteImage: imageList){
+            s3Uploader.deleteFile(deleteImage.getImageUrl().substring(AWS_S3_BUCKET_URL.length()));
+        }
+
         for (MultipartFile multipartFile : images) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
@@ -44,7 +50,6 @@ public class ImageService {
                 final Tag tag = Tag.builder()
                         .userDeviceToken(userDeviceToken)
                         .tagName("tag"+(i+1))
-                        .flagBookMark(false)
                         .image(image)
                         .build();
                 tagRepository.save(tag);
@@ -76,7 +81,6 @@ public class ImageService {
         final Tag tag= Tag.builder()
                 .userDeviceToken(image.getUserDeviceToken())
                 .tagName(tagName)
-                .flagBookMark(false)
                 .image(image)
                 .build();
         tagRepository.save(tag);
@@ -109,6 +113,12 @@ public class ImageService {
             }
         }
         return result;
+    }
+
+    //예전에 저장된 캡쳐사진 모두 삭제
+    @Transactional
+    void deleteAllImage(final String userDeviceToken){
+        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
     }
 }
 
