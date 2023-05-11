@@ -1,5 +1,7 @@
 package com.example.ImageTagerApp.tag;
 
+import com.example.ImageTagerApp.bookMark.BookMark;
+import com.example.ImageTagerApp.bookMark.BookMarkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagService {
     private final  TagRepository tagRepository;
+    private final BookMarkRepository bookMarkRepository;
 
 
     //모든 태그 조회
@@ -34,13 +37,10 @@ public class TagService {
     @Transactional(readOnly = true)
     List<String> getBookMarkTags(final String userDeviceToken){
         final List<String> result= new ArrayList<>();
-        final HashMap<String,Integer> duplicateChk= new HashMap<>();
+        final List<BookMark> bookMarks= bookMarkRepository.findAllByUserDeviceToken(userDeviceToken);
 
-        for(Tag tag: tagRepository.findAllByUserDeviceToken(userDeviceToken)){
-            if(!tag.isFlagBookMark()) continue;
-            if(duplicateChk.containsKey(tag.getTagName())) continue;
-            result.add(tag.getTagName());
-            duplicateChk.put(tag.getTagName(),1);
+        for(BookMark bookMark: bookMarks) {
+            result.add(bookMark.getBookMarkTagName());
         }
 
         return result;
@@ -49,20 +49,19 @@ public class TagService {
 
     //즐겨찾기에 새로운 태그 저장
     @Transactional
-    void updateBookMarkTagOn(final String tagName, final String userDeviceToken){
-        for(Tag tag: tagRepository.findAllByTagNameAndUserDeviceToken(tagName, userDeviceToken)){
-            tag.updateFlagBookMark(true);
-            tagRepository.save(tag);
-        }
+    void registerBookMarkTag(final String tagName, final String userDeviceToken){
+        final BookMark bookMark= BookMark.builder()
+                .bookMarkTagName(tagName)
+                .userDeviceToken(userDeviceToken)
+                .build();
+        bookMarkRepository.save(bookMark);
     }
 
 
     //즐겨찾기에서 태그 삭제
     @Transactional
-    void updateBookMarkTagOff(final String tagName, final String userDeviceToken){
-        for(Tag tag: tagRepository.findAllByTagNameAndUserDeviceToken(tagName, userDeviceToken)){
-            tag.updateFlagBookMark(false);
-            tagRepository.save(tag);
-        }
+    void deleteBookMarkTag(final String tagName, final String userDeviceToken){
+        BookMark bookMark= bookMarkRepository.findByBookMarkTagNameAndUserDeviceToken(tagName, userDeviceToken).get();
+        bookMarkRepository.delete(bookMark);
     }
 }

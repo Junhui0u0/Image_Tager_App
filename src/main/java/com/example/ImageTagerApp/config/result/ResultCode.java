@@ -17,8 +17,8 @@ public enum ResultCode {
     //Tag
     GET_TAG_SUCCESS(200, "T001", "모든 태그 리스트를 조회했습니다."),
     GET_BOOK_MARK_TAG_SUCCESS(200, "T002", "즐겨찾기한 태그 리스트를 조회했습니다."),
-    UPDATE_BOOK_MARK_TAG_TO_TRUE_SUCCESS(201, "T003", "즐겨찾기에 새로운 태그를 저장했습니다."),
-    UPDATE_BOOK_MARK_TAG_TO_FALSE_SUCCESS(200, "T004", "즐겨찾기에서 해당 태그를 삭제했습니다.");
+    REGISTER_BOOK_MARK_TAG_SUCCESS(201, "T003", "즐겨찾기에 새로운 태그를 저장했습니다."),
+    DELETE_BOOK_MARK_TAG_SUCCESS(200, "T004", "즐겨찾기에서 해당 태그를 삭제했습니다.");
 
     private final int status;
     private final String code;

@@ -37,17 +37,17 @@ public class TagController {
 
     //즐겨찾기에 새로운 태그 저장
     @ApiOperation(value="즐겨찾기에 새로운 태그 저장")
-    @PutMapping(value = "/book-mark-tags/on/{tag_name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> updateBookMarkTagOn(@PathVariable("tag_name") String tagName, @RequestBody UserDeviceTokenDto userDeviceTokenDto){
-        tagService.updateBookMarkTagOn(tagName, userDeviceTokenDto.getUserDeviceToken());
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.UPDATE_BOOK_MARK_TAG_TO_TRUE_SUCCESS));
+    @PostMapping(value = "/book-mark-tags/{tag_name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> registerBookMarkTag(@PathVariable("tag_name") String tagName, @RequestBody UserDeviceTokenDto userDeviceTokenDto){
+        tagService.registerBookMarkTag(tagName, userDeviceTokenDto.getUserDeviceToken());
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_BOOK_MARK_TAG_SUCCESS));
     }
 
     //즐겨찾기에서 태그 삭제
     @ApiOperation(value="즐겨찾기에서 태그 삭제")
-    @PutMapping(value = "/book-mark-tags/off/{tag_name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> updateBookMarkTagOff(@PathVariable("tag_name") String tagName, @RequestBody UserDeviceTokenDto userDeviceTokenDto){
-        tagService.updateBookMarkTagOff(tagName, userDeviceTokenDto.getUserDeviceToken());
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.UPDATE_BOOK_MARK_TAG_TO_FALSE_SUCCESS));
+    @DeleteMapping(value = "/book-mark-tags/{tag_name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> deleteBookMarkTag(@PathVariable("tag_name") String tagName, @RequestBody UserDeviceTokenDto userDeviceTokenDto){
+        tagService.deleteBookMarkTag(tagName, userDeviceTokenDto.getUserDeviceToken());
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_BOOK_MARK_TAG_SUCCESS));
     }
 }
