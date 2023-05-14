@@ -5,6 +5,8 @@ import com.example.ImageTagerApp.config.result.ResultResponse;
 import com.example.ImageTagerApp.image.dto.ImageDto;
 import com.example.ImageTagerApp.image.dto.ImageListDto;
 import com.example.ImageTagerApp.image.dto.SearchDto;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,8 +25,11 @@ public class ImageController {
 
     //갤러리에 있는 캡쳐사진 저장
     @ApiOperation(value="갤러리에 있는 캡쳐사진 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
+    })
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> registerImages(@RequestPart("images") List<MultipartFile> images, @RequestPart("userDeviceToken") String userDeviceToken){
+    public ResponseEntity<ResultResponse> registerImages(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images){
         imageService.registerImages(images, userDeviceToken);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
     }
@@ -53,11 +58,15 @@ public class ImageController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_IMAGE_TAG_SUCCESS));
     }
 
+
     //검색한 태그에 해당하는 사진 조회
     @ApiOperation(value="검색한 태그에 해당하는 사진 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
+    })
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> getImagesByTag(@RequestBody SearchDto searchDto){
-        List<ImageListDto> data= imageService.getImagesByTag(searchDto);
+    public ResponseEntity<ResultResponse> getImagesByTag(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestParam List<String> tags){
+        List<ImageListDto> data= imageService.getImagesByTag(userDeviceToken, tags);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_IMAGE_BY_TAG_SUCCESS, data));
     }
 }

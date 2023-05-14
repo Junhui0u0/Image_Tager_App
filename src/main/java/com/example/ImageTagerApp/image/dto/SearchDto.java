@@ -8,6 +8,5 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class SearchDto {
-    private String userDeviceToken;
     private List<String> tagName;
 }

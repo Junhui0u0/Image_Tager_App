@@ -96,13 +96,13 @@ public class ImageService {
 
     //검색한 태그에 해당하는 사진 조회
     @Transactional(readOnly = true)
-    List<ImageListDto> getImagesByTag(final SearchDto searchDto){
+    List<ImageListDto> getImagesByTag(final String userDeviceToken, final List<String> tags){
         final List<ImageListDto> result= new ArrayList<>();
         final HashMap<Long,Integer> duplicateChk= new HashMap<>();
 
-        for(String tagName: searchDto.getTagName()){
-            final List<Tag> tags= tagRepository.findAllByTagNameAndUserDeviceToken(tagName, searchDto.getUserDeviceToken());
-            for(Tag tag: tags){
+        for(String tagName: tags){
+            final List<Tag> tagList= tagRepository.findAllByTagNameAndUserDeviceToken(tagName, userDeviceToken);
+            for(Tag tag: tagList){
                 if(duplicateChk.containsKey(tag.getImage().getImageId())) continue;
                 final ImageListDto imageListDto= ImageListDto.builder()
                         .imageId(tag.getImage().getImageId())
