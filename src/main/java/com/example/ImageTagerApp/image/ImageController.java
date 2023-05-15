@@ -4,7 +4,7 @@ import com.example.ImageTagerApp.config.result.ResultCode;
 import com.example.ImageTagerApp.config.result.ResultResponse;
 import com.example.ImageTagerApp.image.dto.ImageDto;
 import com.example.ImageTagerApp.image.dto.ImageListDto;
-import com.example.ImageTagerApp.image.dto.SearchDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -12,10 +12,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,10 +33,38 @@ public class ImageController {
             @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
     })
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> registerImages(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images){
-        imageService.registerImages(images, userDeviceToken);
+    public ResponseEntity<ResultResponse> registerImages(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images) throws JsonProcessingException {
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        for(MultipartFile m: images){
+            builder.part("file", m.getResource());
+        }
+
+        WebClient webClient =
+                WebClient
+                        .builder()
+                        .baseUrl("http://aaatest.run-asia-northeast1.goorm.site")
+                        .build();
+
+        // AI api 요청
+        Map<String, List<String>> response =
+                webClient
+                        .post()
+                        .uri(uriBuilder ->
+                                uriBuilder
+                                        .path("/predict")
+                                        .build())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(builder.build()))
+                        .retrieve()
+                        .bodyToMono(Map.class)
+                        .block();
+        System.out.println(response.toString());
+
+        imageService.registerImages(images, userDeviceToken, response);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
     }
+
 
     //사진 조회
     @ApiOperation(value="사진 조회")
@@ -42,6 +74,7 @@ public class ImageController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_IMAGE_SUCCESS, data));
     }
 
+
     //사진 태그 추가
     @ApiOperation(value="사진 태그 추가")
     @PostMapping(value = "/image/{image_id}/tag/{tag_name}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,6 +82,7 @@ public class ImageController {
         imageService.registerImageTag(imageId, tagName);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_TAG_SUCCESS));
     }
+
 
     //사진 태그 삭제
     @ApiOperation(value="사진 태그 삭제")
