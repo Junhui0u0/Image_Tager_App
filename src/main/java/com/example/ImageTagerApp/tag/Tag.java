@@ -21,9 +21,6 @@ public class Tag {
     @Column(name = "tag_name")
     private String tagName;
 
-    //@Column(name = "flag_book_mark")
-    //private boolean flagBookMark;
-
     @Column(name = "user_device_token")
     private String userDeviceToken;
 
@@ -31,7 +28,4 @@ public class Tag {
     @JoinColumn(name="image_id")
     private Image image;
 
-    //public void updateFlagBookMark(boolean flag){
-    //    this.flagBookMark= flag;
-    //}
 }
