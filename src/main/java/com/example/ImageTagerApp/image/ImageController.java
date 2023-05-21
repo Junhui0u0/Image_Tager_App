@@ -100,7 +100,7 @@ public class ImageController {
     })
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultResponse> getImagesByTag(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestParam List<String> tags){
-        List<ImageListDto> data= imageService.getImagesByTag(userDeviceToken, tags);
+        List<ImageDto> data= imageService.getImagesByTag(userDeviceToken, tags);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_IMAGE_BY_TAG_SUCCESS, data));
     }
 }

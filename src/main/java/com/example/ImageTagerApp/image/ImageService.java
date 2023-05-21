@@ -9,6 +9,7 @@ import com.example.ImageTagerApp.tag.Tag;
 import com.example.ImageTagerApp.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,9 +64,8 @@ public class ImageService {
     @Transactional(readOnly = true)
     ImageDto getImage(final Long imageId){
         final Image image= imageRepository.findById(imageId).get();
-        final List<String> tagNames= new ArrayList<>();
-        //for(Tag tag: tagRepository.findAllByImage(image)) tagNames.add(tag.getTagName());
-        for(Tag tag: image.getTagList()) tagNames.add(tag.getTagName());
+        final List<Pair<Long,String>> tagNames= new ArrayList<>();
+        for(Tag tag: image.getTagList()) tagNames.add(Pair.of(tag.getTagId(), tag.getTagName()));
 
         return ImageDto.builder()
                 .imageId(image.getImageId())
@@ -97,27 +97,27 @@ public class ImageService {
 
     //검색한 태그에 해당하는 사진 조회
     @Transactional(readOnly = true)
-    List<ImageListDto> getImagesByTag(final String userDeviceToken, final List<String> tags){
-        final List<ImageListDto> result= new ArrayList<>();
+    List<ImageDto> getImagesByTag(final String userDeviceToken, final List<String> tags){
+        final List<ImageDto> result= new ArrayList<>();
         final HashMap<Long,Integer> duplicateChk= new HashMap<>();
 
         for(String tagName: tags){
             final List<Tag> tagList= tagRepository.findAllByTagNameAndUserDeviceToken(tagName, userDeviceToken);
 
             for(Tag tag: tagList){
-                final List<String> tagListToImage= new ArrayList<>();
+                final List<Pair<Long,String>> tagListToImage= new ArrayList<>();
                 if(duplicateChk.containsKey(tag.getImage().getImageId())) continue;
 
                 for(Tag t: tag.getImage().getTagList()){
-                    tagListToImage.add(t.getTagName());
+                    tagListToImage.add(Pair.of(t.getTagId(), t.getTagName()));
                 }
 
-                final ImageListDto imageListDto= ImageListDto.builder()
+                final ImageDto imageDto= ImageDto.builder()
                         .imageId(tag.getImage().getImageId())
                         .imageUrl(tag.getImage().getImageUrl())
                         .tags(tagListToImage)
                         .build();
-                result.add(imageListDto);
+                result.add(imageDto);
 
                 duplicateChk.put(tag.getImage().getImageId(),1);
             }

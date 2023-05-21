@@ -3,8 +3,8 @@ package com.example.ImageTagerApp.image.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
+import org.springframework.data.util.Pair;
 import java.util.List;
 
 @Builder
@@ -13,5 +13,5 @@ import java.util.List;
 public class ImageDto {
     private Long imageId;
     private String imageUrl;
-    private List<String> tags;
+    private List<Pair<Long,String>> tags;
 }
