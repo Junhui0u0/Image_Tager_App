@@ -66,6 +66,21 @@ public class ImageController {
     }
 
 
+    //갤러리에 있는 캡쳐사진 저장2
+    @ApiOperation(value="갤러리에 있는 캡쳐사진 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
+    })
+    @PostMapping(value = "/images2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse> registerImages2(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images) throws JsonProcessingException {
+
+
+        imageService.registerImages2(images, userDeviceToken);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
+    }
+
+
+
     //사진 조회
     @ApiOperation(value="사진 조회")
     @GetMapping(value = "/images/{image_id}", produces = MediaType.APPLICATION_JSON_VALUE)
