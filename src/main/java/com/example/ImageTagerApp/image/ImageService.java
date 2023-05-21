@@ -59,6 +59,37 @@ public class ImageService {
     }
 
 
+    //갤러리에 있는 캡쳐사진 저장2
+    @Transactional
+    public void registerImages2(final List<MultipartFile> images, final String userDeviceToken){
+        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
+        List<Image> imageList= imageRepository.findAllByUserDeviceToken(userDeviceToken);
+        for(Image deleteImage: imageList){
+            s3Uploader.deleteFile(deleteImage.getImageUrl().substring(AWS_S3_BUCKET_URL.length()));
+        }
+
+        for (int i=0; i<images.size(); i++) {
+            final Image image = Image.builder()
+                    .userDeviceToken(userDeviceToken)
+                    .imageUrl(s3Uploader.upload(images.get(i), "image"))
+                    .build();
+            imageRepository.save(image);
+
+
+		//사진을 대표하는 태그 속성 저장
+            for (int j = 0; j < 3; j++) {
+                final Tag tag = Tag.builder()
+                        .userDeviceToken(userDeviceToken)
+                        .tagName("tag"+(j+1))
+                        .image(image)
+                        .build();
+                tagRepository.save(tag);
+            }
+        }
+    }
+
+
+
     //사진 조회
     @Transactional(readOnly = true)
     ImageDto getImage(final Long imageId){
