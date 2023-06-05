@@ -59,7 +59,6 @@ public class ImageController {
                         .retrieve()
                         .bodyToMono(Map.class)
                         .block();
-        System.out.println(response.toString());
 
         imageService.registerImages(images, userDeviceToken, response);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));

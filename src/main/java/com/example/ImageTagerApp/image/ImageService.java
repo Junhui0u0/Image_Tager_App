@@ -33,12 +33,6 @@ public class ImageService {
     //갤러리에 있는 캡쳐사진 저장
     @Transactional
     public void registerImages(final List<MultipartFile> images, final String userDeviceToken, Map<String,List<String>> inferredTagList){
-        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
-        List<Image> imageList= imageRepository.findAllByUserDeviceToken(userDeviceToken);
-        for(Image deleteImage: imageList){
-            s3Uploader.deleteFile(deleteImage.getImageUrl().substring(AWS_S3_BUCKET_URL.length()));
-        }
-
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
