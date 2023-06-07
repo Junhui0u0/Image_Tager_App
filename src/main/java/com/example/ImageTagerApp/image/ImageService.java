@@ -22,24 +22,17 @@ public class ImageService {
 
     //갤러리에 있는 캡쳐사진 저장
     @Transactional
-    public void registerImages(final List<MultipartFile> images, final String userDeviceToken, Map<String,List<String>> inferredTagList){
+    public void registerImages(List<MultipartFile> images, String userDeviceToken
+            , Map<String,List<String>> inferredTagList, List<String> fileUriList){
+
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
-                    .fileName(Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC))
+                    .fileName(fileUriList.get(i))
                     .build();
             imageRepository.save(image);
 
-            System.out.println("파일 오리지널 이름: "+Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC));
-            System.out.println("파일 이름: "+images.get(i).getName());
-            try {
-                //System.out.println("파일 uri: "+images.get(i).getResource().getURI());
-                System.out.println("파일 uri 스트링: "+images.get(i).getResource().getURI().toString());
-                System.out.println("파일 url: "+images.get(i).getResource().getURL());
-                System.out.println("파일 url: "+images.get(i).getResource().toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("파일 uri: " + fileUriList.get(i));
 
             //사진을 대표하는 태그 속성 저장
             for (String inferredTag: inferredTagList.get(String.valueOf(i+1))) {
@@ -56,11 +49,11 @@ public class ImageService {
 
     //갤러리에 있는 캡쳐사진 저장 (AI서버 연결X)
     @Transactional
-    public void registerImagesByRandomTag(final List<MultipartFile> images, final String userDeviceToken){
+    public void registerImagesByRandomTag(List<MultipartFile> images, String userDeviceToken, List<String> fileUriList){
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
-                    .fileName(Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC))
+                    .fileName(fileUriList.get(i))
                     .build();
             imageRepository.save(image);
 
