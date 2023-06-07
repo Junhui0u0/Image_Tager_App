@@ -31,8 +31,6 @@ public class ImageService {
                     .build();
             imageRepository.save(image);
 
-            System.out.println("파일 uri: " + images.get(i).getOriginalFilename());
-
             //사진을 대표하는 태그 속성 저장
             for (String inferredTag: inferredTagList.get(String.valueOf(i+1))) {
                 final Tag tag = Tag.builder()
