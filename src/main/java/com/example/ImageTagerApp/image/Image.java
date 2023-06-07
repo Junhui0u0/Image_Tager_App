@@ -20,8 +20,8 @@ public class Image {
     @Column(name = "image_id", nullable = false, unique = true)
     private Long imageId;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Column(name = "file_name")
+    private String fileName;
 
     @Column(name = "user_device_token")
     private String userDeviceToken;

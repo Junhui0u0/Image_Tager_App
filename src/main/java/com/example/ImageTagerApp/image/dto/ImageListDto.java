@@ -11,6 +11,6 @@ import java.util.List;
 @Getter
 public class ImageListDto {
     private Long imageId;
-    private String imageUrl;
+    private String fileName;
     private List<String> tags;
 }

@@ -3,7 +3,6 @@ package com.example.ImageTagerApp.image;
 import com.example.ImageTagerApp.config.result.ResultCode;
 import com.example.ImageTagerApp.config.result.ResultResponse;
 import com.example.ImageTagerApp.image.dto.ImageDto;
-import com.example.ImageTagerApp.image.dto.ImageListDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

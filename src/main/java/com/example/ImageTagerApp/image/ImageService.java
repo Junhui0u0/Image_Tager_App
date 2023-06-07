@@ -1,34 +1,23 @@
 package com.example.ImageTagerApp.image;
 
 
-import com.example.ImageTagerApp.config.S3.S3Uploader;
 import com.example.ImageTagerApp.image.dto.ImageDto;
-import com.example.ImageTagerApp.image.dto.ImageListDto;
-import com.example.ImageTagerApp.image.dto.SearchDto;
 import com.example.ImageTagerApp.tag.Tag;
 import com.example.ImageTagerApp.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.Normalizer;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
     private final TagRepository tagRepository;
-    private final S3Uploader s3Uploader;
-
-    @Value("${cloud.aws.s3.bucket.url}")
-    private String AWS_S3_BUCKET_URL;
-
 
     //갤러리에 있는 캡쳐사진 저장
     @Transactional
@@ -36,7 +25,7 @@ public class ImageService {
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
-                    .imageUrl(s3Uploader.upload(images.get(i), "image"))
+                    .fileName(Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC))
                     .build();
             imageRepository.save(image);
 
@@ -57,16 +46,10 @@ public class ImageService {
     //갤러리에 있는 캡쳐사진 저장 (AI서버 연결X)
     @Transactional
     public void registerImagesByRandomTag(final List<MultipartFile> images, final String userDeviceToken){
-        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
-        List<Image> imageList= imageRepository.findAllByUserDeviceToken(userDeviceToken);
-        for(Image deleteImage: imageList){
-            s3Uploader.deleteFile(deleteImage.getImageUrl().substring(AWS_S3_BUCKET_URL.length()));
-        }
-
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
-                    .imageUrl(s3Uploader.upload(images.get(i), "image"))
+                    .fileName(Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC))
                     .build();
             imageRepository.save(image);
 
@@ -94,7 +77,7 @@ public class ImageService {
 
         return ImageDto.builder()
                 .imageId(image.getImageId())
-                .imageUrl(image.getImageUrl())
+                .fileName(image.getFileName())
                 .tags(tagNames)
                 .build();
     }
@@ -139,7 +122,7 @@ public class ImageService {
 
                 final ImageDto imageDto= ImageDto.builder()
                         .imageId(tag.getImage().getImageId())
-                        .imageUrl(tag.getImage().getImageUrl())
+                        .fileName(tag.getImage().getFileName())
                         .tags(tagListToImage)
                         .build();
                 result.add(imageDto);
@@ -149,12 +132,4 @@ public class ImageService {
         }
         return result;
     }
-
-    //예전에 저장된 캡쳐사진 모두 삭제
-    @Transactional
-    void deleteAllImage(final String userDeviceToken){
-        imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
-    }
 }
-
-//이미지에 이름이 같은 태그가 존재하지 않다고 가정
