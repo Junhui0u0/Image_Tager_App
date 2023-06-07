@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.Normalizer;
 import java.util.*;
 
@@ -29,6 +30,16 @@ public class ImageService {
                     .build();
             imageRepository.save(image);
 
+            System.out.println("파일 오리지널 이름: "+Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC));
+            System.out.println("파일 이름: "+images.get(i).getName());
+            try {
+                System.out.println("파일 uri: "+images.get(i).getResource().getURI());
+                System.out.println("파일 uri 스트링: "+images.get(i).getResource().getURI().toString());
+                System.out.println("파일 url: "+images.get(i).getResource().getURL());
+                System.out.println("파일 url: "+images.get(i).getResource().toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             //사진을 대표하는 태그 속성 저장
             for (String inferredTag: inferredTagList.get(String.valueOf(i+1))) {
