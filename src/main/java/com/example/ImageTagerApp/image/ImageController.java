@@ -2,7 +2,6 @@ package com.example.ImageTagerApp.image;
 
 import com.example.ImageTagerApp.config.result.ResultCode;
 import com.example.ImageTagerApp.config.result.ResultResponse;
-import com.example.ImageTagerApp.image.dto.FileUriDto;
 import com.example.ImageTagerApp.image.dto.ImageDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,7 +33,7 @@ public class ImageController {
     })
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResultResponse> registerImages(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images
-            , @RequestBody FileUriDto fileUriDto) throws JsonProcessingException {
+            , @RequestPart("fileUriList") List<String> fileUriList) throws JsonProcessingException {
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         for(MultipartFile m: images){
@@ -61,7 +60,7 @@ public class ImageController {
                         .bodyToMono(Map.class)
                         .block();
 
-        imageService.registerImages(images, userDeviceToken, response, fileUriDto.getFileUriList());
+        imageService.registerImages(images, userDeviceToken, response, fileUriList);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
     }
 
@@ -72,8 +71,8 @@ public class ImageController {
             @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
     })
     @PostMapping(value = "/images-random-tag", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> registerImagesByRandomTag(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images, @RequestBody FileUriDto fileUriDto) throws JsonProcessingException {
-        imageService.registerImagesByRandomTag(images, userDeviceToken, fileUriDto.getFileUriList());
+    public ResponseEntity<ResultResponse> registerImagesByRandomTag(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images, @RequestPart("fileUriList") List<String> fileUriList) throws JsonProcessingException {
+        imageService.registerImagesByRandomTag(images, userDeviceToken, fileUriList);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
     }
 
