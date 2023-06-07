@@ -33,7 +33,7 @@ public class ImageService {
             System.out.println("파일 오리지널 이름: "+Normalizer.normalize(Objects.requireNonNull(images.get(i).getOriginalFilename()), Normalizer.Form.NFC));
             System.out.println("파일 이름: "+images.get(i).getName());
             try {
-                System.out.println("파일 uri: "+images.get(i).getResource().getURI());
+                //System.out.println("파일 uri: "+images.get(i).getResource().getURI());
                 System.out.println("파일 uri 스트링: "+images.get(i).getResource().getURI().toString());
                 System.out.println("파일 url: "+images.get(i).getResource().getURL());
                 System.out.println("파일 url: "+images.get(i).getResource().toString());
