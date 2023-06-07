@@ -54,9 +54,9 @@ public class ImageService {
     }
 
 
-    //갤러리에 있는 캡쳐사진 저장2
+    //갤러리에 있는 캡쳐사진 저장 (AI서버 연결X)
     @Transactional
-    public void registerImages2(final List<MultipartFile> images, final String userDeviceToken){
+    public void registerImagesByRandomTag(final List<MultipartFile> images, final String userDeviceToken){
         imageRepository.deleteAllByUserDeviceToken(userDeviceToken);
         List<Image> imageList= imageRepository.findAllByUserDeviceToken(userDeviceToken);
         for(Image deleteImage: imageList){

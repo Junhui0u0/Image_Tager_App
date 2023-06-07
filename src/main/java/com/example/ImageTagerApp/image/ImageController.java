@@ -65,16 +65,14 @@ public class ImageController {
     }
 
 
-    //갤러리에 있는 캡쳐사진 저장2
-    @ApiOperation(value="갤러리에 있는 캡쳐사진 저장")
+    //갤러리에 있는 캡쳐사진 저장 (AI서버 연결X)
+    @ApiOperation(value="갤러리에 있는 캡쳐사진 저장 (AI서버 연결X)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userDeviceToken", value = "userDeviceToken", required = true, dataType = "String", paramType = "header")
     })
-    @PostMapping(value = "/images2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> registerImages2(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images) throws JsonProcessingException {
-
-
-        imageService.registerImages2(images, userDeviceToken);
+    @PostMapping(value = "/images-random-tag", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse> registerImagesByRandomTag(@RequestHeader(value="userDeviceToken") String userDeviceToken, @RequestPart("images") List<MultipartFile> images) throws JsonProcessingException {
+        imageService.registerImagesByRandomTag(images, userDeviceToken);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.REGISTER_IMAGE_SUCCESS));
     }
 
