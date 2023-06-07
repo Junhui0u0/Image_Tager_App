@@ -22,17 +22,16 @@ public class ImageService {
 
     //갤러리에 있는 캡쳐사진 저장
     @Transactional
-    public void registerImages(List<MultipartFile> images, String userDeviceToken
-            , Map<String,List<String>> inferredTagList, List<String> fileUriList){
+    public void registerImages(List<MultipartFile> images, String userDeviceToken, Map<String,List<String>> inferredTagList){
 
         for (int i=0; i<images.size(); i++) {
             final Image image = Image.builder()
                     .userDeviceToken(userDeviceToken)
-                    .fileName(fileUriList.get(i))
+                    .fileName(images.get(i).getOriginalFilename())
                     .build();
             imageRepository.save(image);
 
-            System.out.println("파일 uri: " + fileUriList.get(i));
+            System.out.println("파일 uri: " + images.get(i).getOriginalFilename());
 
             //사진을 대표하는 태그 속성 저장
             for (String inferredTag: inferredTagList.get(String.valueOf(i+1))) {
